@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noticias en Vivo - Argentina</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin: 20px 0;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .stream-box {
+            background: #333;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .stream-box h2 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        iframe {
+            width: 100%;
+            height: 250px;
+            border: none;
+            border-radius: 5px;
+        }
+        .phone-container, .clock-container {
+            position: fixed;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        .phone-container { left: 20px; }
+        .clock-container { right: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>🌎 Noticias en Vivo - Argentina</h1>
+
+    <div class="grid-container">
+        <div class="stream-box">
+            <h2>C5N</h2>
+            <iframe src="https://www.youtube.com/embed/live_stream?channel=UCFgk2Q2mVO1BklRQhSv6p0w&autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+        <div class="stream-box">
+            <h2>UADE CAM</h2>
+            <iframe src="https://www.youtube.com/embed/cyqGzvB1u4o?autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+        <div class="stream-box">
+            <h2>La Nación+</h2>
+            <iframe src="https://www.youtube.com/embed/G5pHuBCqgrs?autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+        <div class="stream-box">
+            <h2>Canal 26</h2>
+            <iframe src="https://www.youtube.com/embed/35LSnUPu5RY?autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+        <div class="stream-box">
+            <h2>Crónica TV</h2>
+            <iframe src="https://www.youtube.com/embed/avly0uwZzOE?autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+        <div class="stream-box">
+            <h2>TN (Todo Noticias)</h2>
+            <iframe src="https://www.youtube.com/embed/live_stream?channel=UCj6PcyLvpnIRT_2W_mwa9Aw&autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="phone-container">
+        <p>📞 Tel: +54 11 1234-5678</p>
+    </div>
+
+    <div class="clock-container">
+        <p id="clock">Cargando hora...</p>
+        <p id="temperature">🌡️ --°C</p>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('clock').innerText = `🕒 ${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function fetchTemperature() {
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-34.61&longitude=-58.38&current_weather=true');
+                if (!response.ok) throw new Error('No se pudo obtener el clima.');
+                const data = await response.json();
+                document.getElementById('temperature').innerText = `🌡️ ${data.current_weather.temperature}°C`;
+            } catch (error) {
+                document.getElementById('temperature').innerText = '🌡️ --°C';
+            }
+        }
+        fetchTemperature();
+        setInterval(fetchTemperature, 60000);
+    </script>
+
+</body>
+</html>
