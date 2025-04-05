@@ -102,6 +102,15 @@
         </div>
     </div>
 
+
+    <!-- Juego del Dino pixelado -->
+    <div id="dino-game" style="position:relative; width:100%; max-width:600px; height:150px; margin: 40px auto 60px auto; background:#111; border:2px solid #555; border-radius:10px;"></div>
+
+
+
+
+
+
     <div class="phone-container">
         <p>📞 Tel: +54 11 1234-5678</p>
     </div>
@@ -134,6 +143,172 @@
         fetchTemperature();
         setInterval(fetchTemperature, 60000);
     </script>
+
+
+<script>
+    class PixelDinoGame {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.canvas = document.createElement("canvas");
+        this.ctx = this.canvas.getContext("2d");
+        this.container.appendChild(this.canvas);
+        this.canvas.style.imageRendering = "pixelated";
+  
+        this.initUI();
+        this.setCanvasSize();
+        this.bindEvents();
+        this.reset();
+        this.drawMenu();
+      }
+  
+      initUI() {
+        // Crear menú overlay
+        this.menu = document.createElement("div");
+        this.menu.style.position = "absolute";
+        this.menu.style.top = "50%";
+        this.menu.style.left = "50%";
+        this.menu.style.transform = "translate(-50%, -50%)";
+        this.menu.style.background = "#111";
+        this.menu.style.color = "#fff";
+        this.menu.style.padding = "15px 20px";
+        this.menu.style.borderRadius = "10px";
+        this.menu.style.boxShadow = "0 0 15px rgba(255,255,255,0.1)";
+        this.menu.style.fontFamily = "monospace";
+        this.menu.style.zIndex = "10";
+        this.menu.style.display = "none";
+        this.menu.style.textAlign = "center";
+  
+        this.scoreText = document.createElement("div");
+        this.scoreText.innerText = "Puntaje: 0";
+        this.menu.appendChild(this.scoreText);
+  
+        this.playBtn = document.createElement("button");
+        this.playBtn.innerText = "🎮 JUGAR";
+        this.playBtn.style.marginTop = "10px";
+        this.playBtn.style.padding = "5px 15px";
+        this.playBtn.style.fontSize = "16px";
+        this.playBtn.style.cursor = "pointer";
+        this.playBtn.style.background = "#444";
+        this.playBtn.style.color = "#fff";
+        this.playBtn.style.border = "none";
+        this.playBtn.style.borderRadius = "5px";
+  
+        this.menu.appendChild(this.playBtn);
+        this.container.appendChild(this.menu);
+  
+        this.playBtn.addEventListener("click", () => {
+          this.reset();
+          this.menu.style.display = "none";
+          this.running = true;
+          this.update();
+        });
+      }
+  
+      setCanvasSize() {
+        this.canvas.width = this.container.clientWidth;
+        this.canvas.height = this.container.clientHeight;
+      }
+  
+      bindEvents() {
+        window.addEventListener("resize", () => this.setCanvasSize());
+        document.addEventListener("keydown", (e) => {
+          if (e.code === "Space" && !this.jumping && this.running) {
+            this.jumping = true;
+            this.vy = 8;
+          }
+        });
+      }
+  
+      reset() {
+        this.x = 30;
+        this.y = 110;
+        this.vy = 0;
+        this.gravity = 0.5;
+        this.jumping = false;
+        this.score = 0;
+        this.running = false;
+        this.cactusX = this.canvas.width;
+        this.cactusW = 10;
+        this.cactusH = 30;
+      }
+  
+      drawDino() {
+        this.ctx.fillStyle = "#ccc";
+        this.ctx.fillRect(this.x, this.y, 20, 20);
+        // Ojos
+        this.ctx.fillStyle = "#000";
+        this.ctx.fillRect(this.x + 14, this.y + 5, 2, 2);
+      }
+  
+      drawCactus() {
+        this.ctx.fillStyle = "#3f3";
+        this.ctx.fillRect(this.cactusX, 110, this.cactusW, this.cactusH);
+      }
+  
+      drawGround() {
+        this.ctx.fillStyle = "#555";
+        this.ctx.fillRect(0, 130, this.canvas.width, 2);
+      }
+  
+      drawScore() {
+        this.ctx.fillStyle = "#999";
+        this.ctx.font = "12px monospace";
+        this.ctx.fillText("Puntos: " + this.score, this.canvas.width - 100, 20);
+      }
+  
+      drawMenu() {
+        this.menu.style.display = "block";
+        this.scoreText.innerText = "Puntaje: " + this.score;
+      }
+  
+      update = () => {
+        if (!this.running) return;
+  
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawGround();
+  
+        if (this.jumping) {
+          this.vy -= this.gravity;
+          this.y -= this.vy;
+          if (this.y >= 110) {
+            this.y = 110;
+            this.jumping = false;
+            this.vy = 0;
+          }
+        }
+  
+        this.cactusX -= 4;
+        if (this.cactusX < -this.cactusW) {
+          this.cactusX = this.canvas.width + Math.random() * 50;
+          this.score++;
+        }
+  
+        // Colisión
+        if (
+          this.cactusX < this.x + 20 &&
+          this.cactusX + this.cactusW > this.x &&
+          this.y + 20 >= 110
+        ) {
+          this.running = false;
+          this.drawMenu();
+          return;
+        }
+  
+        this.drawDino();
+        this.drawCactus();
+        this.drawScore();
+  
+        requestAnimationFrame(this.update);
+      };
+    }
+  
+    // Iniciar juego
+    new PixelDinoGame("dino-game");
+  </script>
+  
+
+
+
 
 </body>
 </html>
